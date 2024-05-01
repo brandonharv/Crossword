@@ -47,3 +47,42 @@ def parse_cmdline_args():
 
 # This is about half of length of the original file. 
 # Plan to transribe the rest of fundementals of this code file at a later date. 
+
+
+def create_generator(algorithm, word_list, dimensions, n_loops, timeout, target_occupancy):
+    """ Constructs the generator object for the given algorithm.
+    """
+    algorithm_class_map = {"basic": GridGenerator}
+
+    try:
+        return algorithm_class_map[algorithm](word_list, dimensions, n_loops, timeout, target_occupancy)
+    except KeyError:
+        print("Could not create generator object for unknown algorithm: {}.".format(algorithm))
+
+
+def main():
+    # Parse args
+    args = parse_cmdline_args()
+
+    # Read words from file
+    words = file_ops.read_word_list(args.word_file)
+    print("Read {} words from file.".format(len(words)))
+
+    # Construct the generator object
+    dim = args.dim if len(args.dim)==2 else [args.dim[0], args.dim[0]]
+    generator = create_generator(args.algorithm, words, dim, args.n_loops, args.timeout, args.target_occ)
+    if not generator:
+        return
+
+    # Generate the grid
+    generator.generate_grid()
+
+    # Write it out
+    grid = generator.get_grid()
+    words_in_grid = generator.get_words_in_grid()
+    file_ops.write_grid_to_file(grid, words=[x["word"] for x in words_in_grid], out_pdf=args.out_pdf)
+    file_ops.write_grid_to_screen(grid, words_in_grid)
+
+
+if __name__ == "__main__":
+    main()
