@@ -26,3 +26,49 @@ def read_word_list(filename, min_length=2, min_different_letters=2):
 
 # This is about 20% of the length of the original file that I am using as reference
 # Plan to transribe the rest of the fundamentals of this file soon
+
+def write_grid_to_file(grid, out_file="table.tex", out_pdf="out.pdf", keep_tex=False, words=[]):
+    """ This function receives the generated grid and writes it to the file (or
+    to the screen, if that's what we want). The grid is expected to be a list
+    of lists, as used by the remaining functions.
+
+    If a list of words is given, it is taken as the words used on the grid and
+    is printed as such.
+    """
+    # Print grid to the file and compile
+    with open(out_file, "w") as texfile:
+        # Write preamble
+        texfile.write("\documentclass[a4paper]{article}" + "\n")
+        texfile.write(r"\usepackage[utf8]{inputenc}" + "\n")
+        texfile.write(r"\usepackage[table]{xcolor}" + "\n")
+        texfile.write(r"\usepackage{multicol}" + "\n")
+        texfile.write(r"\usepackage{fullpage}" + "\n")
+        texfile.write(r"\usepackage{graphicx}" + "\n")
+        texfile.write("\n")
+        texfile.write(r"\begin{document}" + "\n")
+        texfile.write(r"\section*{Challenge}" + "\n")
+
+        # Resize box
+        texfile.write(r"\resizebox{\textwidth}{!}{")
+
+        # Write table environment and format
+        texfile.write(r"\begin{tabular}{|")
+        for i in range(len(grid[0])):
+            texfile.write(r"c|")
+        texfile.write("}\n\hline\n")
+
+        # Write actual table
+        for line in grid:
+            for index, element in enumerate(line):
+                if element == 0:
+                    texfile.write(r"\cellcolor{black}0")
+
+                # This feels a bit hacky, suggestions appreciated
+                if index != len(line)-1:
+                    texfile.write(" & ")
+
+            texfile.write(r"\\ \hline" + "\n")
+
+        # End tabular environment
+        texfile.write("\end{tabular}\n")
+        texfile.write(r"}" + "\n\n")
